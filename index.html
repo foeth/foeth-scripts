@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FOETH Scripts — Free tools for After Effects</title>
+<meta name="description" content="Free plugins and scripts for Adobe After Effects. Download, use, support if you like.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0b0d;
+  --bg-2:#0f1114;
+  --panel:#121418;
+  --line:#1e2228;
+  --line-2:#2a2f37;
+  --text:#e4e7eb;
+  --muted:#7b838e;
+  --dim:#4a515b;
+  --accent:#8fb4d8;
+  --accent-dim:rgba(143,180,216,.12);
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Inter',system-ui,-apple-system,Segoe UI,sans-serif;
+  --maxw:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:400;
+  line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+/* background grid */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(var(--line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:80px 80px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 30%,transparent 100%);
+  opacity:.55;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:1}
+.mono{font-family:var(--mono)}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tag b{color:var(--accent);font-weight:500}
+
+/* ---------- NAV ---------- */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,11,13,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:baseline;gap:8px;font-family:var(--mono)}
+.logo .mark{
+  width:18px;height:18px;border:1px solid var(--accent);position:relative;align-self:center;margin-right:4px;
+}
+.logo .mark::after{content:"";position:absolute;inset:4px;background:var(--accent)}
+.logo strong{font-weight:700;letter-spacing:.18em;font-size:16px}
+.logo span{font-weight:300;font-size:13px;color:var(--muted);letter-spacing:.06em}
+.nav ul{display:flex;gap:30px;list-style:none}
+.nav ul a{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.nav ul a:hover{color:var(--text)}
+.nav .status{font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);animation:pulse 2.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.burger{display:none;width:36px;height:36px;border:1px solid var(--line-2);position:relative}
+.burger i{position:absolute;left:9px;right:9px;height:1px;background:var(--text)}
+.burger i:nth-child(1){top:13px}.burger i:nth-child(2){top:21px}
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 22px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--line-2);transition:all .25s;position:relative;
+}
+.btn:hover{border-color:var(--text)}
+.btn.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent)}
+.btn .arr{transition:transform .25s}
+.btn:hover .arr{transform:translateX(4px)}
+
+/* corner brackets */
+.corners{position:relative}
+.corners::before,.corners::after,.corners>.c3,.corners>.c4{
+  content:"";position:absolute;width:10px;height:10px;border-color:var(--line-2);border-style:solid;transition:all .3s;pointer-events:none;
+}
+.corners::before{top:-1px;left:-1px;border-width:1px 0 0 1px}
+.corners::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0}
+.corners>.c3{top:-1px;right:-1px;border-width:1px 1px 0 0}
+.corners>.c4{bottom:-1px;left:-1px;border-width:0 0 1px 1px}
+
+/* ---------- HERO ---------- */
+.hero{padding:120px 0 100px;border-bottom:1px solid var(--line)}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:60px;align-items:end}
+.hero h1{
+  font-family:var(--mono);font-weight:700;font-size:clamp(54px,9vw,120px);line-height:.92;letter-spacing:-.02em;
+  margin:26px 0 30px;
+}
+.hero h1 .thin{font-weight:300;color:var(--muted);display:block;font-size:.42em;letter-spacing:.02em;margin-top:14px}
+.hero p.lead{font-size:18px;color:var(--muted);max-width:520px;font-weight:300}
+.hero p.lead em{color:var(--text);font-style:normal}
+.hero .actions{display:flex;gap:14px;margin-top:40px;flex-wrap:wrap}
+.cursor{display:inline-block;width:.5em;height:.08em;background:var(--accent);margin-left:.08em;animation:blink 1.1s steps(1) infinite;vertical-align:baseline}
+@keyframes blink{50%{opacity:0}}
+
+.spec{border:1px solid var(--line);background:var(--bg-2)}
+.spec-head{display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.spec-row{display:flex;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px}
+.spec-row:last-child{border-bottom:0}
+.spec-row span:first-child{color:var(--muted)}
+.spec-row .v{color:var(--text)}
+.spec-row .v.acc{color:var(--accent)}
+
+/* ---------- SECTIONS ---------- */
+section{padding:110px 0;border-bottom:1px solid var(--line)}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:50px;flex-wrap:wrap}
+.sec-head h2{font-family:var(--mono);font-weight:500;font-size:clamp(30px,4vw,44px);letter-spacing:-.01em;margin-top:14px;line-height:1.1}
+.sec-head p{color:var(--muted);max-width:420px;font-weight:300}
+
+/* ---------- CATALOG ---------- */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:30px;flex-wrap:wrap}
+.tabs{display:flex;border:1px solid var(--line)}
+.tab{
+  font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:12px 20px;color:var(--muted);
+  border-right:1px solid var(--line);transition:all .2s;display:flex;gap:10px;align-items:center;
+}
+.tab:last-child{border-right:0}
+.tab:hover{color:var(--text)}
+.tab.active{background:var(--panel);color:var(--text)}
+.tab .n{font-size:10px;color:var(--dim)}
+.tab.active .n{color:var(--accent)}
+.search{
+  display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:0 14px;height:44px;min-width:260px;
+  font-family:var(--mono);font-size:12px;color:var(--muted);
+}
+.search input{background:none;border:0;outline:0;color:var(--text);font:inherit;width:100%}
+.search:focus-within{border-color:var(--line-2)}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.card{background:var(--bg);display:flex;flex-direction:column;cursor:pointer;transition:background .3s;position:relative}
+.card:hover{background:var(--bg-2)}
+.card:hover .corners::before,.card:hover .corners::after,.card:hover .corners>.c3,.card:hover .corners>.c4{border-color:var(--accent);width:16px;height:16px}
+.preview{aspect-ratio:16/10;margin:18px 18px 0;background:var(--panel);overflow:hidden;position:relative}
+.preview img,.preview video{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(.15)}
+.preview svg{width:100%;height:100%;display:block}
+.preview .badge{
+  position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  background:rgba(10,11,13,.8);border:1px solid var(--line-2);padding:4px 8px;color:var(--text);
+}
+.preview .badge.new{color:var(--accent);border-color:var(--accent)}
+.card-body{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1}
+.card-meta{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.card h3{font-family:var(--mono);font-weight:500;font-size:19px;margin:10px 0 8px;letter-spacing:.01em}
+.card p{color:var(--muted);font-size:14px;font-weight:300;flex:1}
+.card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.card-foot .size{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.dl{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text);
+  display:flex;align-items:center;gap:8px;padding:8px 0;
+}
+.dl svg{transition:transform .25s}
+.card:hover .dl{color:var(--accent)}
+.card:hover .dl svg{transform:translateY(2px)}
+.soon{background:var(--bg);display:grid;place-items:center;min-height:200px;
+  background-image:repeating-linear-gradient(135deg,transparent 0 14px,rgba(255,255,255,.015) 14px 15px)}
+.soon .tag{color:var(--dim)}
+.empty{grid-column:1/-1;background:var(--bg);padding:70px;text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+/* ---------- INSTALL ---------- */
+.steps{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.step-block{border:1px solid var(--line);background:var(--bg-2)}
+.step-block .hd{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.step-block .hd h3{font-family:var(--mono);font-weight:500;font-size:15px}
+.step-block ol{list-style:none;counter-reset:s;padding:8px 0}
+.step-block li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;padding:12px 20px 12px 0;font-size:14px;color:var(--muted);font-weight:300}
+.step-block li::before{content:counter(s,decimal-leading-zero);font-family:var(--mono);font-size:11px;color:var(--accent);padding-left:20px;padding-top:3px}
+.step-block code{
+  font-family:var(--mono);font-size:12px;color:var(--text);background:var(--panel);border:1px solid var(--line);padding:2px 6px;word-break:break-all;
+}
+
+/* ---------- SUPPORT ---------- */
+.support{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.support > div{background:var(--bg);padding:50px}
+.support h2{font-family:var(--mono);font-weight:500;font-size:clamp(28px,3.4vw,40px);line-height:1.15;margin:16px 0 20px}
+.support p{color:var(--muted);font-weight:300;max-width:440px}
+.donate-list{display:flex;flex-direction:column;gap:12px}
+.donate{
+  display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);padding:20px 22px;transition:all .25s;
+}
+.donate:hover{border-color:var(--accent);background:var(--bg-2)}
+.donate .l{display:flex;flex-direction:column;gap:4px}
+.donate .l strong{font-family:var(--mono);font-weight:500;font-size:16px}
+.donate .l span{font-size:13px;color:var(--muted);font-weight:300}
+.donate .arr{font-family:var(--mono);color:var(--muted);transition:all .25s}
+.donate:hover .arr{color:var(--accent);transform:translateX(4px)}
+.counter{display:flex;gap:40px;margin-top:40px}
+.counter div{display:flex;flex-direction:column}
+.counter b{font-family:var(--mono);font-weight:500;font-size:34px}
+.counter span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+/* ---------- ABOUT ---------- */
+.about{display:grid;grid-template-columns:.8fr 1.2fr;gap:70px;align-items:start}
+.about-card{border:1px solid var(--line);background:var(--bg-2);padding:28px}
+.avatar{
+  aspect-ratio:1;background:var(--panel);border:1px solid var(--line);margin-bottom:22px;display:grid;place-items:center;position:relative;overflow:hidden;
+}
+.avatar span{font-family:var(--mono);font-weight:700;font-size:64px;letter-spacing:.1em;color:var(--line-2)}
+.avatar::after{
+  content:"";position:absolute;left:0;right:0;height:1px;background:var(--accent);opacity:.5;top:0;animation:scan 4s linear infinite;
+}
+@keyframes scan{to{top:100%}}
+.about-card .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;padding:10px 0;border-top:1px solid var(--line)}
+.about-card .row span:first-child{color:var(--muted)}
+.about h2{font-family:var(--mono);font-weight:500;font-size:clamp(28px,3.4vw,40px);line-height:1.15;margin:16px 0 24px}
+.about p{color:var(--muted);font-weight:300;margin-bottom:16px;font-size:16px}
+.socials{display:flex;gap:12px;margin-top:34px;flex-wrap:wrap}
+.social{display:flex;align-items:center;gap:12px;border:1px solid var(--line);padding:14px 20px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;transition:all .25s}
+.social:hover{border-color:var(--text)}
+.social svg{width:16px;height:16px}
+
+/* ---------- FOOTER ---------- */
+footer{padding:50px 0 40px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.foot .tag{font-size:10px}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px}
+.modal.open{display:flex}
+.modal-bg{position:absolute;inset:0;background:rgba(5,6,7,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fade .25s}
+.modal-box{
+  position:relative;width:100%;max-width:880px;max-height:90vh;overflow:auto;background:var(--bg);border:1px solid var(--line-2);
+  display:grid;grid-template-columns:1.1fr .9fr;animation:rise .3s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.modal-media{background:var(--panel);min-height:320px;border-right:1px solid var(--line)}
+.modal-media img,.modal-media video,.modal-media svg{width:100%;height:100%;object-fit:cover;display:block}
+.modal-info{padding:32px;display:flex;flex-direction:column}
+.modal-info h3{font-family:var(--mono);font-weight:500;font-size:26px;margin:12px 0 14px}
+.modal-info p{color:var(--muted);font-weight:300;font-size:15px}
+.features{list-style:none;margin:22px 0}
+.features li{font-size:14px;color:var(--muted);padding:8px 0;border-top:1px solid var(--line);display:flex;gap:12px;font-weight:300}
+.features li::before{content:"+";font-family:var(--mono);color:var(--accent)}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:24px}
+.specs div{background:var(--bg-2);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.specs span{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.specs b{font-family:var(--mono);font-weight:400;font-size:13px}
+.modal-info .btn{justify-content:center;margin-top:auto}
+.close{position:absolute;top:14px;right:14px;width:34px;height:34px;border:1px solid var(--line-2);display:grid;place-items:center;font-family:var(--mono);color:var(--muted);z-index:2;background:var(--bg)}
+.close:hover{color:var(--text);border-color:var(--text)}
+
+/* ---------- REVEAL ---------- */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:980px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .hero-grid,.about,.support,.steps{grid-template-columns:1fr}
+  .hero-grid{gap:50px}
+  .modal-box{grid-template-columns:1fr}
+  .modal-media{border-right:0;border-bottom:1px solid var(--line);min-height:220px}
+}
+@media (max-width:720px){
+  .nav ul,.nav .status{display:none}
+  .burger{display:block}
+  .nav.open ul{
+    display:flex;flex-direction:column;gap:0;position:absolute;top:64px;left:0;right:0;background:var(--bg);border-bottom:1px solid var(--line);
+  }
+  .nav.open ul a{display:block;padding:18px 28px;border-top:1px solid var(--line)}
+  .grid{grid-template-columns:1fr}
+  section{padding:80px 0}
+  .hero{padding:80px 0 70px}
+  .support > div{padding:32px 24px}
+  .search{min-width:0;width:100%}
+  .tabs{width:100%}.tab{flex:1;justify-content:center;padding:12px 8px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header>
+  <div class="wrap nav" id="nav">
+    <a href="#top" class="logo"><i class="mark"></i><strong>FOETH</strong><span>Scripts</span></a>
+    <ul>
+      <li><a href="#catalog">Catalog</a></li>
+      <li><a href="#install">Install</a></li>
+      <li><a href="#support">Support</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <div class="status"><i class="dot"></i>SYS / ONLINE</div>
+    <button class="burger" id="burger" aria-label="Menu"><i></i><i></i></button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<div class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="reveal">
+      <div class="tag"><b>//</b> Free tools for Adobe After Effects</div>
+      <h1>FOETH<span class="cursor"></span><span class="thin">scripts &amp; plugins</span></h1>
+      <p class="lead">Free plugins and scripts for <em>After Effects</em>. No sign-ups, no subscriptions: pick a tool, download it, get to work.</p>
+      <div class="actions">
+        <a href="#catalog" class="btn primary">Browse catalog <span class="arr">→</span></a>
+        <a href="#support" class="btn">Support the project</a>
+      </div>
+    </div>
+    <div class="spec corners reveal"><i class="c3"></i><i class="c4"></i>
+      <div class="spec-head"><span class="tag">System.info</span><span class="tag"><b>v1.0</b></span></div>
+      <div class="spec-row"><span>Tools</span><span class="v" id="stat-total">—</span></div>
+      <div class="spec-row"><span>Plugins</span><span class="v" id="stat-plugins">—</span></div>
+      <div class="spec-row"><span>Scripts</span><span class="v" id="stat-scripts">—</span></div>
+      <div class="spec-row"><span>Compatibility</span><span class="v">AE 2022+</span></div>
+      <div class="spec-row"><span>Price</span><span class="v acc">$0.00</span></div>
+      <div class="spec-row"><span>Last update</span><span class="v" id="stat-updated">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CATALOG ================= -->
+<section id="catalog">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="tag"><b>01</b> / Catalog</div>
+        <h2>Tools</h2>
+      </div>
+      <p>Everything is free. Open a card to see the details and requirements, then grab what you need.</p>
+    </div>
+
+    <div class="toolbar reveal">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-filter="all">All <span class="n" id="n-all">00</span></button>
+        <button class="tab" data-filter="plugin">Plugins <span class="n" id="n-plugin">00</span></button>
+        <button class="tab" data-filter="script">Scripts <span class="n" id="n-script">00</span></button>
+      </div>
+      <label class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" id="search" placeholder="Search…" autocomplete="off">
+      </label>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<!-- ================= INSTALL ================= -->
+<section id="install">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="tag"><b>02</b> / Install</div>
+        <h2>How to install</h2>
+      </div>
+      <p>Takes a couple of minutes. Close After Effects before installing.</p>
+    </div>
+    <div class="steps">
+      <div class="step-block reveal">
+        <div class="hd"><h3>Scripts · .jsx / .jsxbin</h3><span class="tag">ScriptUI</span></div>
+        <ol>
+          <li>Download the archive and unzip it.</li>
+          <li><span>Windows: copy the file to <code>Adobe After Effects [version]/Support Files/Scripts/ScriptUI Panels</code></span></li>
+          <li><span>Mac: copy it to <code>Applications/Adobe After Effects [version]/Scripts/ScriptUI Panels</code></span></li>
+          <li>In AE go to Edit → Preferences → Scripting &amp; Expressions and enable “Allow Scripts to Write Files and Access Network”.</li>
+          <li>Restart AE and open the panel from the Window menu.</li>
+        </ol>
+      </div>
+      <div class="step-block reveal">
+        <div class="hd"><h3>Plugins · .aex / .plugin</h3><span class="tag">Effects</span></div>
+        <ol>
+          <li>Download the archive and unzip it.</li>
+          <li><span>Windows: copy the <code>.aex</code> to <code>C:/Program Files/Adobe/Common/Plug-ins/7.0/MediaCore</code></span></li>
+          <li><span>Mac: copy the <code>.plugin</code> to <code>/Library/Application Support/Adobe/Common/Plug-ins/7.0/MediaCore</code></span></li>
+          <li>Restart After Effects.</li>
+          <li>Find the effect under Effect → FOETH.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SUPPORT ================= -->
+<section id="support">
+  <div class="wrap">
+    <div class="support reveal">
+      <div>
+        <div class="tag"><b>03</b> / Support</div>
+        <h2>Free for everyone.<br>Support is optional.</h2>
+        <p>If a tool saved you a few hours on a project, consider chipping in. Every tip helps ship new plugins and scripts faster.</p>
+        <div class="counter">
+          <div><b id="cnt-tools">0</b><span>Tools</span></div>
+          <div><b>∞</b><span>Downloads</span></div>
+          <div><b>$0</b><span>Price</span></div>
+        </div>
+      </div>
+      <div class="donate-list">
+        <!-- REPLACE WITH YOUR LINKS -->
+        <a class="donate" href="https://ko-fi.com/" target="_blank" rel="noopener">
+          <div class="l"><strong>Ko-fi</strong><span>One-time tip · cards &amp; PayPal</span></div><span class="arr">→</span>
+        </a>
+        <a class="donate" href="https://www.paypal.com/paypalme/" target="_blank" rel="noopener">
+          <div class="l"><strong>PayPal</strong><span>Send any amount directly</span></div><span class="arr">→</span>
+        </a>
+        <a class="donate" href="https://www.patreon.com/" target="_blank" rel="noopener">
+          <div class="l"><strong>Patreon</strong><span>Monthly support · early access</span></div><span class="arr">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="about">
+  <div class="wrap about">
+    <div class="about-card corners reveal"><i class="c3"></i><i class="c4"></i>
+      <div class="avatar"><span>FΘ</span></div>
+      <div class="row"><span>Author</span><span>FOETH</span></div>
+      <div class="row"><span>Focus</span><span>VFX / Motion</span></div>
+      <div class="row"><span>Software</span><span>After Effects</span></div>
+      <div class="row"><span>Status</span><span style="color:var(--accent)">Building</span></div>
+    </div>
+    <div class="reveal">
+      <div class="tag"><b>04</b> / About</div>
+      <h2>Tools I wanted<br>for myself.</h2>
+      <p>Hi! I build plugins and scripts for After Effects that kill repetitive work and add visual effects in a single click. Every tool gets battle-tested on my own projects before it lands here, for free.</p>
+      <p>New releases, demos and effect breakdowns go up on TikTok first. Follow along, and tell me which tool you want me to build next.</p>
+      <div class="socials">
+        <!-- REPLACE WITH YOUR LINKS -->
+        <a class="social" href="https://www.tiktok.com/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.6 2.6 0 0 1-2.6-2.6 2.6 2.6 0 0 1 3.37-2.48V9.66a5.7 5.7 0 0 0-.77-.05A5.7 5.7 0 0 0 4.17 15.3 5.7 5.7 0 0 0 9.86 21a5.7 5.7 0 0 0 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3a4.3 4.3 0 0 1-3.25-1.48Z"/></svg>
+          TikTok
+        </a>
+        <a class="social" href="https://t.me/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13.2 1.8 11.7c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3Z"/></svg>
+          Telegram
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a href="#top" class="logo"><i class="mark"></i><strong>FOETH</strong><span>Scripts</span></a>
+    <span class="tag">© <span id="year"></span> FOETH Scripts · Not affiliated with Adobe Inc.</span>
+    <span class="tag">Build <b>1.0.0</b></span>
+  </div>
+</footer>
+
+<!-- ================= MODAL ================= -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <button class="close" data-close aria-label="Close">✕</button>
+    <div class="modal-media" id="m-media"></div>
+    <div class="modal-info">
+      <div class="tag" id="m-type"></div>
+      <h3 id="m-title"></h3>
+      <p id="m-desc"></p>
+      <ul class="features" id="m-features"></ul>
+      <div class="specs">
+        <div><span>Version</span><b id="m-version"></b></div>
+        <div><span>After Effects</span><b id="m-ae"></b></div>
+        <div><span>Format</span><b id="m-format"></b></div>
+        <div><span>Size</span><b id="m-size"></b></div>
+      </div>
+      <a class="btn primary" id="m-download" href="#" download>Download free <span class="arr">↓</span></a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   КАТАЛОГ — чтобы добавить инструмент, скопируй один блок { ... }
+   и поменяй поля. Файл для скачивания положи в папку files/,
+   превью (gif / mp4 / jpg) — в папку previews/.
+   preview: если оставить пустым "", нарисуется абстрактная заставка.
+   type: "plugin" или "script"
+   ===================================================================== */
+const TOOLS = [
+  {
+    id: "glow-pro",
+    type: "plugin",
+    title: "FOETH Glow",
+    desc: "Soft multi-layer glow with color and falloff control. Great for titles, light accents and neon looks.",
+    features: ["Multiple glow layers", "Separate core and halo color", "Fast GPU rendering"],
+    version: "1.0",
+    ae: "2022+",
+    format: ".aex / .plugin",
+    size: "1.2 MB",
+    file: "files/foeth-glow.zip",
+    preview: "",
+    isNew: true,
+    date: "2026-11-13"
+  },
+  {
+    id: "rgb-split",
+    type: "plugin",
+    title: "FOETH Split",
+    desc: "RGB channel split and digital distortion for glitch transitions and cyberpunk titles.",
+    features: ["Per-axis channel offset", "Animatable intensity", "Transition presets"],
+    version: "1.0",
+    ae: "2022+",
+    format: ".aex / .plugin",
+    size: "0.9 MB",
+    file: "files/foeth-split.zip",
+    preview: "",
+    isNew: true,
+    date: "2026-11-13"
+  },
+  {
+    id: "layer-renamer",
+    type: "script",
+    title: "Batch Rename",
+    desc: "Batch-rename layers with templates: prefixes, numbering, find and replace.",
+    features: ["Numbered templates", "Find and replace", "Works on selected layers"],
+    version: "0.9",
+    ae: "2020+",
+    format: ".jsx",
+    size: "24 KB",
+    file: "files/batch-rename.zip",
+    preview: "",
+    isNew: false,
+    date: "2026-11-10"
+  },
+  {
+    id: "beat-shake",
+    type: "script",
+    title: "Beat Shake",
+    desc: "Beat-synced camera shake: reads audio amplitude and sets shake keyframes for you.",
+    features: ["Automatic audio analysis", "Adjustable threshold and strength", "Plain keyframes, no expressions"],
+    version: "0.9",
+    ae: "2022+",
+    format: ".jsx",
+    size: "31 KB",
+    file: "files/beat-shake.zip",
+    preview: "",
+    isNew: false,
+    date: "2026-11-08"
+  }
+];
+
+/* ---------- generative preview (if no image) ---------- */
+function genPreview(seed, type){
+  let h = 0; for (const c of seed) h = (h*31 + c.charCodeAt(0)) >>> 0;
+  const r = () => (h = (h*1664525 + 1013904223) >>> 0) / 4294967296;
+  const W=320,H=200; let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">`;
+  s += `<rect width="${W}" height="${H}" fill="#121418"/>`;
+  for(let x=0;x<=W;x+=20) s+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#1a1d22"/>`;
+  for(let y=0;y<=H;y+=20) s+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1a1d22"/>`;
+  if(type==="plugin"){
+    const cx=W*(.35+r()*.3), cy=H*(.35+r()*.3);
+    for(let i=6;i>0;i--) s+=`<circle cx="${cx}" cy="${cy}" r="${i*14+r()*6}" fill="none" stroke="#8fb4d8" stroke-opacity="${.05+ (6-i)*.06}"/>`;
+    s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="#8fb4d8"/>`;
+    for(let i=0;i<5;i++){const y=r()*H; s+=`<rect x="${r()*W*.6}" y="${y}" width="${40+r()*120}" height="${1+r()*3}" fill="#e4e7eb" fill-opacity="${.08+r()*.18}"/>`;}
+  } else {
+    let y=34;
+    for(let i=0;i<7;i++){
+      const ind=(r()*3|0)*14, w=40+r()*150;
+      s+=`<rect x="${28+ind}" y="${y}" width="${w}" height="6" fill="${i===2?'#8fb4d8':'#e4e7eb'}" fill-opacity="${i===2?.8:.12+r()*.15}"/>`;
+      y+=20;
+    }
+    s+=`<rect x="28" y="${y-6}" width="8" height="12" fill="#8fb4d8"><animate attributeName="opacity" values="1;0;1" dur="1.1s" repeatCount="indefinite"/></rect>`;
+  }
+  s+=`<text x="${W-12}" y="${H-12}" text-anchor="end" font-family="JetBrains Mono,monospace" font-size="9" fill="#4a515b" letter-spacing="1.5">${seed.toUpperCase()}</text>`;
+  return s+`</svg>`;
+}
+function mediaHTML(t){
+  if(!t.preview) return genPreview(t.id, t.type);
+  if(/\.(mp4|webm)$/i.test(t.preview)) return `<video src="${t.preview}" autoplay muted loop playsinline></video>`;
+  return `<img src="${t.preview}" alt="${t.title}" loading="lazy">`;
+}
+const pad = n => String(n).padStart(2,"0");
+const typeLabel = t => t==="plugin" ? "Plugin" : "Script";
+
+/* ---------- render ---------- */
+const grid = document.getElementById("grid");
+let filter = "all", query = "";
+function render(){
+  const q = query.trim().toLowerCase();
+  const list = TOOLS.filter(t => (filter==="all"||t.type===filter) &&
+    (!q || (t.title+" "+t.desc).toLowerCase().includes(q)));
+  if(!list.length){ grid.innerHTML = `<div class="empty">// Nothing found</div>`; return; }
+  grid.innerHTML = list.map((t,i)=>`
+    <article class="card" data-id="${t.id}" tabindex="0">
+      <div class="preview corners"><i class="c3"></i><i class="c4"></i>
+        ${mediaHTML(t)}
+        <span class="badge ${t.isNew?'new':''}">${t.isNew?'New':typeLabel(t.type)}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-meta"><span>${typeLabel(t.type)} · ${pad(i+1)}</span><span>AE ${t.ae}</span></div>
+        <h3>${t.title}</h3>
+        <p>${t.desc}</p>
+        <div class="card-foot">
+          <span class="size">v${t.version} · ${t.size}</span>
+          <a class="dl" href="${t.file}" download onclick="event.stopPropagation()">Download
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v13M6 11l6 6 6-6M4 21h16"/></svg>
+          </a>
+        </div>
+      </div>
+    </article>`).join("") + fillers(list.length);
+}
+/* пустые ячейки «скоро», чтобы сетка не обрывалась */
+function fillers(n){
+  const cols = window.innerWidth<=720 ? 1 : window.innerWidth<=980 ? 2 : 3;
+  const rest = (cols - n % cols) % cols;
+  return Array.from({length:rest},()=>`<div class="soon"><span class="tag">// Coming soon</span></div>`).join("");
+}
+window.addEventListener("resize",()=>render());
+function stats(){
+  const p = TOOLS.filter(t=>t.type==="plugin").length, s = TOOLS.filter(t=>t.type==="script").length;
+  document.getElementById("n-all").textContent = pad(TOOLS.length);
+  document.getElementById("n-plugin").textContent = pad(p);
+  document.getElementById("n-script").textContent = pad(s);
+  document.getElementById("stat-total").textContent = pad(TOOLS.length);
+  document.getElementById("stat-plugins").textContent = pad(p);
+  document.getElementById("stat-scripts").textContent = pad(s);
+  document.getElementById("cnt-tools").textContent = TOOLS.length;
+  const last = TOOLS.map(t=>t.date).sort().pop();
+  if(last) document.getElementById("stat-updated").textContent = new Date(last+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+  document.getElementById("year").textContent = new Date().getFullYear();
+}
+
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); filter=b.dataset.filter; render();
+}));
+document.getElementById("search").addEventListener("input",e=>{query=e.target.value;render();});
+
+/* ---------- modal ---------- */
+const modal = document.getElementById("modal");
+function openTool(id){
+  const t = TOOLS.find(x=>x.id===id); if(!t) return;
+  document.getElementById("m-media").innerHTML = mediaHTML(t);
+  document.getElementById("m-type").innerHTML = `<b>//</b> ${typeLabel(t.type)}`;
+  document.getElementById("m-title").textContent = t.title;
+  document.getElementById("m-desc").textContent = t.desc;
+  document.getElementById("m-features").innerHTML = (t.features||[]).map(f=>`<li>${f}</li>`).join("");
+  document.getElementById("m-version").textContent = t.version;
+  document.getElementById("m-ae").textContent = t.ae;
+  document.getElementById("m-format").textContent = t.format;
+  document.getElementById("m-size").textContent = t.size;
+  document.getElementById("m-download").href = t.file;
+  modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+}
+function closeModal(){ modal.classList.remove("open"); modal.setAttribute("aria-hidden","true"); document.body.style.overflow=""; }
+grid.addEventListener("click",e=>{const c=e.target.closest(".card"); if(c) openTool(c.dataset.id);});
+grid.addEventListener("keydown",e=>{if(e.key==="Enter"){const c=e.target.closest(".card"); if(c) openTool(c.dataset.id);}});
+modal.addEventListener("click",e=>{ if(e.target.closest("[data-close]")) closeModal(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
+
+/* ---------- mobile menu ---------- */
+const nav = document.getElementById("nav");
+document.getElementById("burger").addEventListener("click",()=>nav.classList.toggle("open"));
+nav.querySelectorAll("ul a").forEach(a=>a.addEventListener("click",()=>nav.classList.remove("open")));
+
+/* ---------- reveal on scroll ---------- */
+const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target);} }),{threshold:.12});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+stats(); render();
+</script>
+</body>
+</html>
