@@ -32,7 +32,7 @@ foeth-scripts/
 ## Что заменить на свои данные
 
 Поиском по `REPLACE WITH YOUR LINKS` найдёшь места с:
-- ссылками на донаты (Ko-fi, PayPal, Patreon)
+- ссылками на донаты (PayPal, Patreon)
 - ссылками на соцсети (TikTok, Telegram)
 
 Донаты выводятся через PayPal: Ko-fi переводит деньги сразу на твой PayPal,
